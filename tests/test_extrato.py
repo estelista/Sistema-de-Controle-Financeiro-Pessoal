@@ -2,6 +2,7 @@ from datetime import date
 
 from financeiro.categoria import Categoria
 from financeiro.conciliacao import Conciliacao
+from financeiro.estrategia_correcao import CorrecaoIPCA
 from financeiro.extrato import Extrato
 from financeiro.fechamento import Fechamento
 from financeiro.lancamento import Lancamento
@@ -50,3 +51,11 @@ class TestExtrato:
         e = Extrato("2026-08", [self.fechamento1])
         resumo = e.gerar_resumo()
         assert "2026-08" in resumo
+
+    def test_saldo_final_corrigido_sem_estrategia_e_igual_ao_normal(self) -> None:
+        e = Extrato("2026-08", [self.fechamento1])
+        assert e.saldo_final_corrigido() == e.saldo_final()
+
+    def test_saldo_final_corrigido_aplica_a_estrategia(self) -> None:
+        e = Extrato("2026-08", [self.fechamento1])
+        assert e.saldo_final_corrigido(CorrecaoIPCA(10.0)) == e.saldo_final() * 1.10

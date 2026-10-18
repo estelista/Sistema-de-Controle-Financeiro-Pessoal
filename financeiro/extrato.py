@@ -1,4 +1,5 @@
 from financeiro.conciliacao import Conciliacao
+from financeiro.estrategia_correcao import EstrategiaCorrecaoMonetaria
 from financeiro.fechamento import Fechamento
 
 
@@ -23,6 +24,12 @@ class Extrato:
 
     def saldo_final(self) -> float:
         return self.total_creditos() - self.total_debitos()
+
+    def saldo_final_corrigido(self, estrategia_correcao: EstrategiaCorrecaoMonetaria | None = None) -> float:
+        saldo = self.saldo_final()
+        if estrategia_correcao is None:
+            return saldo
+        return estrategia_correcao.calcular(saldo)
 
     def possui_conciliacao_pendente(self, conciliacoes: list[Conciliacao]) -> bool:
         return any(not c.esta_conciliada() for c in conciliacoes)
